@@ -1,0 +1,37 @@
+SELECT initial_table.flight_no AS ID_main_flight,
+       min(initial_table.departure_city) AS departure__city,     /* min - необходимо из-за group by (при max рез-т не изменится) */
+       min(initial_table.arrival_city) AS arrival__city,            /* min - необходимо из-за group by (при max рез-т не изменится) */
+       avg(initial_table.actual_duration) AS actual_flight_time,
+       avg(n_flights.count_flights) AS number_flights,
+       sum(data_flights.number_tickets) AS amount_number_purchased_tickets,
+       sum(data_flights.money_for_tickets) AS ticket_revenue
+FROM
+  (SELECT flight_id,
+          flight_no,
+          actual_duration,
+          departure_city,
+          arrival_city
+   FROM dst_project.flights_v
+   WHERE departure_airport = 'AAQ' /*Аэропорт отправления из Анапы */
+     AND (date_trunc('month', scheduled_departure) in ('2017-01-01',
+                                                       '2017-02-01',
+                                                       '2017-12-01'))/* рассматриваемый период - зима 2017 года */
+     AND status not in ('Cancelled') /* рейсы - неотмененные */ ) AS initial_table
+LEFT JOIN
+  (SELECT flight_no,
+          count(flight_id) AS count_flights
+   FROM dst_project.flights_v
+   WHERE departure_airport = 'AAQ' /*Аэропорт отправления из Анапы */
+     AND (date_trunc('month', scheduled_departure) in ('2017-01-01',
+                                                       '2017-02-01',
+                                                       '2017-12-01'))/* рассматриваемый период - зима 2017 года */
+     AND status not in ('Cancelled') /* рейсы - неотмененные */
+   GROUP BY flight_no) AS n_flights ON n_flights.flight_no = initial_table.flight_no
+LEFT JOIN
+  (SELECT flight_id,
+          sum(amount) AS money_for_tickets,
+          count(amount) AS number_tickets
+   FROM dst_project.ticket_flights
+   GROUP BY flight_id) AS data_flights ON data_flights.flight_id = initial_table.flight_id
+GROUP BY initial_table.flight_no
+

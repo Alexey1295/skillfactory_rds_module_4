@@ -1,0 +1,4 @@
+id_main_flight,departure__city,arrival__city,actual_flight_time,number_flights,amount_number_purchased_tickets,ticket_revenue
+PG0194,Анапа,Новокузнецк,0 years 0 mons 0 days 5 hours 6 mins 40.00 secs,9.0000000000000000,,
+PG0252,Анапа,Москва,0 years 0 mons 0 days 1 hours 39 mins 49.830508 secs,59.0000000000000000,6674,96912000.00
+PG0480,Анапа,Белгород,0 years 0 mons 0 days 0 hours 50 mins 5.084746 secs,59.0000000000000000,5321,41915700.00
